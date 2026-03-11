@@ -91,35 +91,59 @@ std::ostream& operator<<(std::ostream& out, const Connection& c) {
 
 // STUDENT TODO: IMPLEMENT
 void Graph::updateNode(int id, NodeInfo n) {
-    if (/* id is out of bounds — check if id is a valid index into nodes */ true) {
+    /* id is out of bounds — check if id is a valid index into nodes */
+    if (id < 0 || id >= size) {
         cout << "Attempting to update node with id: " << id << " but node does not exist" << endl;
         return;
     }
-
+    
+    if(nodes[id] == nullptr){
+        nodes[id] = new NodeInfo();
+    }
+    NodeInfo* node = nodes[id];
+    node->activationFunction = n.activationFunction;
+    node->activationDerivative = n.activationDerivative;
+    node->preActivationValue = n.preActivationValue;
+    node->activate();
+    node->bias = n.bias;
+    node->delta = n.delta;
     return; //stub
 }
 
 // STUDENT TODO: IMPLEMENT
 NodeInfo* Graph::getNode(int id) const {
+    if(id >= 0 && id < size){
+        return nodes[id];
+    }
     return nullptr; //stub
 }
 
 // STUDENT TODO: IMPLEMENT
 void Graph::updateConnection(int v, int u, double w) {
-    if (/* v is out of bounds — check if v is a valid index into nodes */ true) {
+    /* v is out of bounds — check if v is a valid index into nodes */ 
+    if (v < 0 || v >= size) {
         cerr << "Attempting to update connection between " << v << " and " << u << " with weight " << w << " but " << v << " does not exist" << endl;
         exit(1);
     }
-    if (/* u is out of bounds — check if u is a valid index into nodes */ true) {
+    /* u is out of bounds — check if u is a valid index into nodes */ 
+    if (u < 0 || u >= size) {
         cerr << "Attempting to update connection between " << v << " and " << u << " with weight " << w << " but " << u << " does not exist" << endl;
         exit(1);
     }
 
+    /* AdjList = vector<unordered_map<int, connection>> index = start, unordered int = end, conn*/
+    adjacencyList[v][u].source = v;
+    adjacencyList[v][u].dest = u;
+    adjacencyList[v][u].weight = w;
     return; //stub
 }
 
 // STUDENT TODO: IMPLEMENT
 void Graph::clear() {
+    for(NodeInfo* node: nodes){
+        delete node;
+    }
+    resize(0);
     return; //stub
 }
 

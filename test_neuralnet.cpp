@@ -73,7 +73,6 @@ void test_evaluate() {
     vector<double> input; input.push_back(0.3); input.push_back(-0.2);
     DataInstance di(input, 0);
     vector<double> prediction = nn.predict(di);
-
     ASSERT_EQUAL(prediction.at(0), 0.428639, "test_evaluate");
 }
 
@@ -89,6 +88,7 @@ void test_contribute() {
     nn.update();
     double biasAfter = nn.getNode(0)->bias;
     double weightAfter = nn.getAdjacencyList().at(0).begin()->second.weight;
+
 
     double biasDiffExpected = 0;
     double weightDiffExpected = -0.05999962;
