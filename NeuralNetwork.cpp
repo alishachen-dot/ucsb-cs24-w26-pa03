@@ -1,6 +1,7 @@
 // includes
 #include "NeuralNetwork.hpp"
 #include "Trace.hpp"
+#include <algorithm>
 using namespace std;
 
 
@@ -125,10 +126,53 @@ bool NeuralNetwork::contribute(double y, double p) {
     // should not be called on them.
     // The contributions map acts as your "visited" set and also stores each node's
     // computed contribution so it is not recomputed if reached by multiple paths.
+    /*
+    for (size_t src = 0; src < adjacencyList.size(); src++) {
+    std::cout << "Node " << src << " -> ";
+
+    for (auto &pair : adjacencyList[src]) {
+        int dest = pair.first;
+        Connection &conn = pair.second;
+
+        std::cout << dest 
+                  << "(w: " << conn.weight 
+                  << ", delta: " << conn.delta 
+                  << ") ";
+    }
+
+    std::cout << std::endl;
+}
+    for(int i=0; i < nodes.size(); i++){
+        cout<< i << " " << nodes[i]->delta << endl;
+    }
+    cout << endl;*/
     for(auto id : inputNodeIds){
-        contribute(id, y, p);
+        for(auto& input: adjacencyList[id]){
+            contribute(id, y, p);
+        }
        
     }
+    /*
+    for(int i=0; i < nodes.size(); i++){
+        cout<< i << " " << nodes[i]->delta << " " << nodes[i]->bias << endl;
+  
+    }
+
+    for (size_t src = 0; src < adjacencyList.size(); src++) {
+    std::cout << "Node " << src << " -> ";
+
+    for (auto &pair : adjacencyList[src]) {
+        int dest = pair.first;
+        Connection &conn = pair.second;
+
+        std::cout << dest 
+                  << "(w: " << conn.weight 
+                  << ", delta: " << conn.delta 
+                  << ") ";
+    }
+
+    std::cout << std::endl;
+}*/
 
     return true;
 }
@@ -160,7 +204,9 @@ double NeuralNetwork::contribute(int nodeId, const double& y, const double& p) {
         visitContributeNeighbor(connection.second, incomingContribution, outgoingContribution);
     }
     // Before returning, store outgoingContribution in the contributions map.
-    visitContributeNode(nodeId, outgoingContribution);
+    if(std::find(inputNodeIds.begin(), inputNodeIds.end(), nodeId) == inputNodeIds.end()){
+        visitContributeNode(nodeId, outgoingContribution);
+    }
     contributions[nodeId] = outgoingContribution;
     
     return outgoingContribution;
@@ -181,11 +227,9 @@ bool NeuralNetwork::update() {
         node->bias -= learningRate * node->delta;
         node->delta = 0;
     }
-    for(int n: inputNodeIds){
-        nodes[n]->bias = 0;
-    }
+    
 
-    for(auto& adj : adjacencyList){
+    for(auto&adj : adjacencyList){
         for(auto& connection: adj){
             connection.second.weight -= learningRate * connection.second.delta;
             connection.second.delta = 0;
