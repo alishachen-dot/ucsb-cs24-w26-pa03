@@ -45,7 +45,7 @@ vector<int> NeuralNetwork::getOutputNodeIds() const {
 
 // STUDENT TODO: IMPLEMENT
 vector<double> NeuralNetwork::predict(DataInstance instance) {
-
+    flush();
     vector<double> input = instance.x;
 
     // error checking : size mismatch
@@ -146,6 +146,7 @@ bool NeuralNetwork::contribute(double y, double p) {
         cout<< i << " " << nodes[i]->delta << endl;
     }
     cout << endl;*/
+    //flush();
     for(auto id : inputNodeIds){
         for(auto& input: adjacencyList[id]){
             contribute(id, y, p);
@@ -178,6 +179,7 @@ bool NeuralNetwork::contribute(double y, double p) {
 }
 // STUDENT TODO: IMPLEMENT
 double NeuralNetwork::contribute(int nodeId, const double& y, const double& p) {
+
     
     visitContributeStart(nodeId); // don't remove this line, used for visualization
     // incomingContribution: the error signal returned by a recursive call on a neighbor.
